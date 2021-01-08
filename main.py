@@ -30,10 +30,14 @@ def concat_individual_datasets():
         scaler = MinMaxScaler()
         df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
         # Transforming the time series data in a dataframe appropriate for supervised learning
-        df = transform_timeseries_data(df, 7, 1)
+        df = transform_timeseries_data(df, n_per_in, n_per_out, n_features)
         # In each iteration the individual dataset is added to the aggregated dataset
         dataset = pd.concat([dataset, df])
-
+    pd.set_option('display.max_columns', None)
+    print(dataset.head())
+    print(dataset.columns)
+    print(len(dataset))
+    pd.options.display.width = 0
     y = dataset.iloc[:, -1]
     X = dataset.iloc[:, :-1]
 
