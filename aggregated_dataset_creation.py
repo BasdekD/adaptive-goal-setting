@@ -39,30 +39,50 @@ def transform_timeseries_data(data, n_in=1, n_out=1, drop_NaN=True):
     return agg
 
 
-n_per_in = 30
+# n_per_in = 30
+# n_per_out = 1
+# n_features = 38
+#
+# # The variable in which the aggregated dataset will be stored
+# dataset = pd.DataFrame()
+# # The directory where all the individual all_data_aggregated are
+# dataset_folder = os.fsencode('individual_all_data')
+# # Iterating through the individual all_data_aggregated directory
+# for csv in os.listdir(dataset_folder):
+#     # The individual's all_data_aggregated csv
+#     df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl')
+#     # Setting the date column as the index of the dataframe
+#     df = df.set_index(df.columns[0])
+#     # Normalizing/Scaling the Data
+#     # scaler = MinMaxScaler()
+#     # df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
+#     # Transforming the time series all_data_aggregated in a dataframe appropriate for supervised learning
+#     df = transform_timeseries_data(df, n_per_in, n_per_out)
+#     # In each iteration the individual dataset is added to the aggregated dataset
+#     dataset = pd.concat([dataset, df])
+# pd.set_option('display.max_columns', None)
+# path = os.fsencode('all_data_aggregated')
+# dataset.to_excel(os.path.join(path.decode("utf-8"),
+#                               'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'.xlsx'))
+
+
+n_per_in = 14
 n_per_out = 1
 n_features = 38
 
 # The variable in which the aggregated dataset will be stored
 dataset = pd.DataFrame()
-# The directory where all the individual data are
-dataset_folder = os.fsencode('final_datasets')
-# Iterating through the individual data directory
+# The directory where all the individual all_data_aggregated are
+dataset_folder = os.fsencode('individual_preprocessed_activity_data')
+# Iterating through the individual all_data_aggregated directory
 for csv in os.listdir(dataset_folder):
-    # The individual's data csv
-    df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl')
+    # The individual's all_data_aggregated csv
+    df = pd.read_csv(os.path.join(dataset_folder, csv).decode('utf-8'))
     # Setting the date column as the index of the dataframe
     df = df.set_index(df.columns[0])
-    # Normalizing/Scaling the Data
-    # scaler = MinMaxScaler()
-    # df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
-    # Transforming the time series data in a dataframe appropriate for supervised learning
     df = transform_timeseries_data(df, n_per_in, n_per_out)
     # In each iteration the individual dataset is added to the aggregated dataset
     dataset = pd.concat([dataset, df])
-pd.set_option('display.max_columns', None)
-path = os.fsencode('data')
+path = os.fsencode('all_data_aggregated')
 dataset.to_excel(os.path.join(path.decode("utf-8"),
-                              'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'.xlsx'))
-
-
+                              'aggregated_activity_only_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'.xlsx'))
