@@ -8,7 +8,7 @@ import time
 
 tic = time.perf_counter()
 
-n_per_in = 7
+n_per_in = 5
 n_per_out = 1
 n_features = 38
 
