@@ -42,7 +42,7 @@ def get_selectors(X, y):
     print('Training Linear Regression wrapper....')
     rfecv = RFECV(estimator=LinearRegression(), step=n_per_in, cv=KFold(shuffle=False),
                   scoring='neg_mean_absolute_error',
-                  min_features_to_select=n_per_in)
+                  min_features_to_select=n_per_in, n_jobs=-1)
     rfecv.fit(X, y)
     filename = 'rfecv_lr_'+str(n_per_in)+'.sav'
     pickle.dump(rfecv, open(filename, 'wb'))
@@ -51,7 +51,7 @@ def get_selectors(X, y):
     print('Training Decision Tree wrapper....')
     rfecv = RFECV(estimator=DecisionTreeRegressor(), step=n_per_in, cv=KFold(shuffle=False),
                   scoring='neg_mean_absolute_error',
-                  min_features_to_select=n_per_in)
+                  min_features_to_select=n_per_in, n_jobs=-1)
     rfecv.fit(X, y)
     filename = 'rfecv_dt_'+str(n_per_in)+'.sav'
     pickle.dump(rfecv, open(filename, 'wb'))
@@ -60,7 +60,7 @@ def get_selectors(X, y):
     print('Training Random Forest wrapper....')
     rfecv = RFECV(estimator=RandomForestRegressor(), step=n_per_in, cv=KFold(shuffle=False),
                   scoring='neg_mean_absolute_error',
-                  min_features_to_select=n_per_in)
+                  min_features_to_select=n_per_in, n_jobs=-1)
     rfecv.fit(X, y)
     filename = 'rfecv_rf_'+str(n_per_in)+'.sav'
     pickle.dump(rfecv, open(filename, 'wb'))
@@ -69,7 +69,7 @@ def get_selectors(X, y):
     print('Training GBRegressor wrapper....')
     rfecv = RFECV(estimator=GradientBoostingRegressor(), step=n_per_in, cv=KFold(shuffle=False),
                   scoring='neg_mean_absolute_error',
-                  min_features_to_select=n_per_in)
+                  min_features_to_select=n_per_in, n_jobs=-1)
     rfecv.fit(X, y)
     filename = 'rfecv_gbr_'+str(n_per_in)+'.sav'
     pickle.dump(rfecv, open(filename, 'wb'))
