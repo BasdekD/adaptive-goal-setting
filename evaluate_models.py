@@ -12,10 +12,10 @@ from sklearn.metrics import mean_absolute_error
 
 def get_models():
     models = dict()
-    # lr
-    estimator = LinearRegression()
-    grid_params = [{'fit_intercept': [True]}]
-    models['lr'] = {'estimator': estimator, 'grid_params': grid_params}
+    # # lr
+    # estimator = LinearRegression()
+    # grid_params = [{'fit_intercept': [True]}]
+    # models['lr'] = {'estimator': estimator, 'grid_params': grid_params}
     # dt
     estimator = DecisionTreeRegressor()
     grid_params = [{
@@ -24,15 +24,15 @@ def get_models():
         'max_features': ['auto', 'sqrt', 'log2']
     }]
     models['dt'] = {'estimator': estimator, 'grid_params': grid_params}
-    # rf
-    estimator = RandomForestRegressor()
-    grid_params = [{
-        'n_estimators': [50, 100, 150],
-        'criterion': ['mae'],
-        'max_depth': [7, 12, 20],
-        'max_features': ['sqrt', 'log2']
-    }]
-    models['rf'] = {'estimator': estimator, 'grid_params': grid_params}
+    # # rf
+    # estimator = RandomForestRegressor()
+    # grid_params = [{
+    #     'n_estimators': [50, 100, 150],
+    #     'criterion': ['mae'],
+    #     'max_depth': [7, 12, 20],
+    #     'max_features': ['sqrt', 'log2']
+    # }]
+    # models['rf'] = {'estimator': estimator, 'grid_params': grid_params}
     # gbr
     estimator = GradientBoostingRegressor()
     grid_params = [{
@@ -64,24 +64,25 @@ models = get_models()
 results, names = list(), list()
 for name, model in models.items():
     cv = KFold(n_splits=5, shuffle=False)
+
+    pipeline = Pipeline(steps=[('feature_selector', rfe), ('model', model['estimator'])])
+    print("Creating pipeline with %s model..." % name)
     predictor = GridSearchCV(
-        estimator=model['estimator'],
+        estimator=pipeline,
         param_grid=model['grid_params'],
         scoring='neg_mean_absolute_error',
         cv=cv,
         refit=True
     )
-    pipeline = Pipeline(steps=[('feature_selector', rfe), ('model', predictor)])
-    print("Creating pipeline with %s model..." % name)
-    pipeline.fit(x_train, y_train)
+    predictor.fit(x_train, y_train)
     filename = 'model_%s_%d.sav' % (name, n_per_in)
-    print("Writing %s pipeline to file..." % name)
-    pickle.dump(pipeline, open(filename, 'wb'))
+    print("Writing %s model to file..." % name)
+    pickle.dump(predictor, open(filename, 'wb'))
     # evaluate model
     print("Getting predictions for validation set")
-    y_predicted = pipeline.predict(x_test)
+    y_predicted = predictor.predict(x_test)
     print('MAE in validation set for %s: %.3f' % (name, mean_absolute_error(y_test, y_predicted)))
-    score = pipeline['model'].best_score_
+    score = predictor.best_score_
     results.append(score)
     names.append(name)
     # report performance
