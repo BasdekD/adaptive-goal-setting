@@ -1,9 +1,8 @@
 import utilities
 import pickle
 from sklearn.model_selection import KFold, GridSearchCV, train_test_split
-from sklearn.pipeline import Pipeline
-from matplotlib import pyplot
 from sklearn.metrics import mean_absolute_error
+from matplotlib import pyplot
 
 
 n_per_in = 5
@@ -12,23 +11,21 @@ X, y = utilities.get_dataset(n_per_in, n_per_out)
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
 
 
-# create pipeline
-rfe = utilities.get_feature_selector('gbr', n_per_in)
 models = utilities.get_models(['dt', 'gbr'])
+cv = KFold(n_splits=5, shuffle=False)
 results, names = list(), list()
+
 for name, model in models.items():
-    cv = KFold(n_splits=5, shuffle=False)
-    pipeline = Pipeline(steps=[('feature_selector', rfe), ('model', model['estimator'])])
-    print("Creating pipeline with %s model..." % name)
+    print("Looking for best parameters for %s model..." % name)
     predictor = GridSearchCV(
-        estimator=pipeline,
+        estimator=model['estimator'],
         param_grid=model['grid_params'],
         scoring='neg_mean_absolute_error',
         cv=cv,
         refit=True
     )
     predictor.fit(x_train, y_train)
-    filename = 'model_%s_%d.sav' % (name, n_per_in)
+    filename = 'no_rfe_model_%s_%d.sav' % (name, n_per_in)
     print("Writing %s model to file..." % name)
     pickle.dump(predictor, open(filename, 'wb'))
     # evaluate model
