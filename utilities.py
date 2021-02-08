@@ -42,12 +42,26 @@ def get_models(names):
     all_models['dt'] = {'estimator': estimator, 'grid_params': grid_params}
     # rf
     estimator = RandomForestRegressor()
+    # grid_params = [{
+    #     'n_estimators': [50, 100, 150],
+    #     'criterion': ['mae'],
+    #     'max_depth': [7, 12, 20],
+    #     'max_features': ['sqrt', 'log2']
+    # }]
+    # grid_params = [{
+    #     'n_estimators': [150, 200, 250],
+    #     'criterion': ['mae'],
+    #     'max_depth': [20, 40, 60],
+    #     'max_features': ['sqrt']
+    # }]
     grid_params = [{
-        'n_estimators': [50, 100, 150],
+        'n_estimators': [250, 300, 400],
         'criterion': ['mae'],
-        'max_depth': [7, 12, 20],
-        'max_features': ['sqrt', 'log2']
+        'max_depth': [40],
+        'max_features': ['sqrt']
     }]
+
+
     all_models['rf'] = {'estimator': estimator, 'grid_params': grid_params}
     # gbr
     estimator = GradientBoostingRegressor()

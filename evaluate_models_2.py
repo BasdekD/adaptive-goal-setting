@@ -11,7 +11,7 @@ X, y = utilities.get_dataset(n_per_in, n_per_out)
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
 
 
-models = utilities.get_models(['dt', 'gbr'])
+models = utilities.get_models(['rf'])
 cv = KFold(n_splits=5, shuffle=False)
 results, names = list(), list()
 
@@ -37,9 +37,9 @@ for name, model in models.items():
     names.append(name)
     # report performance
     print('>%s %.3f' % (name, score))
-    pyplot.plot(y_predicted, label='Predicted')
+    pyplot.plot(y_predicted[:20], label='Predicted')
     # Printing and plotting the actual values
-    pyplot.plot(y_test, label='Actual')
+    pyplot.plot(y_test[:20], label='Actual')
     pyplot.title(f"Predicted vs Actual Daily Step Counts")
     pyplot.ylabel("Steps")
     pyplot.legend()
