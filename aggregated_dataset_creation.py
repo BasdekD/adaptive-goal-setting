@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from datetime import datetime
 
 
 def transform_timeseries_data(data, n_in=1, n_out=1, drop_NaN=True):
@@ -39,7 +40,29 @@ def transform_timeseries_data(data, n_in=1, n_out=1, drop_NaN=True):
     return agg
 
 
-n_per_in = 30
+def check_if_dates_are_consecutive(df):
+    print("Checking dates")
+    cons_dates = pd.DataFrame()
+    dataset = pd.DataFrame()
+    for index, row in df.iterrows():
+        if cons_dates.empty:
+            cons_dates = cons_dates.append(row, ignore_index=True)
+        else:
+            # if datetime.strptime(row['date'], "%Y-%m-%d").toordinal() - datetime.strptime(df.loc[index - 1]['date'],
+            #                                                                              "%Y-%m-%d").toordinal() == 1:
+            if datetime.strptime(index, "%Y-%m-%d").toordinal() - datetime.strptime(df.loc[df.index[df.index.to_list().index(index) - 1]].name,
+                                                                                          "%Y-%m-%d").toordinal() == 1:
+                cons_dates = cons_dates.append(row, ignore_index=True)
+            else:
+                print("found non-consecutive dates")
+                transformed_data = transform_timeseries_data(cons_dates, n_per_in, n_per_out)
+                dataset = pd.concat([dataset, transformed_data])
+                dataset = pd.concat([dataset, check_if_dates_are_consecutive(df.iloc[df.index.to_list().index(index)+1:, ::])])
+    transformed_data = transform_timeseries_data(cons_dates, n_per_in, n_per_out)
+    return pd.concat([dataset, transformed_data])
+
+
+n_per_in = 5
 n_per_out = 1
 n_features = 38
 
@@ -52,18 +75,20 @@ for csv in os.listdir(dataset_folder):
     # The individual's all_data_aggregated csv
     df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl')
     # Setting the date column as the index of the dataframe
+    df = df.drop_duplicates()
     df = df.set_index(df.columns[0])
+    df = check_if_dates_are_consecutive(df)
     # Normalizing/Scaling the Data
     # scaler = MinMaxScaler()
     # df = pd.DataFrame(scaler.fit_transform(df), columns=df.columns, index=df.index)
     # Transforming the time series all_data_aggregated in a dataframe appropriate for supervised learning
-    df = transform_timeseries_data(df, n_per_in, n_per_out)
+    # df = transform_timeseries_data(df, n_per_in, n_per_out)
     # In each iteration the individual dataset is added to the aggregated dataset
     dataset = pd.concat([dataset, df])
 pd.set_option('display.max_columns', None)
 path = os.fsencode('all_data_aggregated')
 dataset.to_excel(os.path.join(path.decode("utf-8"),
-                              'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'.xlsx'))
+                              'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx'))
 
 
 # n_per_in = 14
