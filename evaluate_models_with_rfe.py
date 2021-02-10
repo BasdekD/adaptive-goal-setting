@@ -8,10 +8,12 @@ from matplotlib import pyplot
 n_per_in = 5
 n_per_out = 1
 X, y = utilities.get_dataset(n_per_in, n_per_out)
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
+rfe = pickle.load(open('rfecv_models\\rfecv_gbr_%d.sav'%n_per_in, 'rb'))
+x_reduced = rfe.transform(X)
+x_train, x_test, y_train, y_test = train_test_split(x_reduced, y, test_size=0.10, random_state=42)
 
+models = utilities.get_models(['lr', 'dt', 'rf', 'gbr'])
 
-models = utilities.get_models(['gbr'])
 cv = KFold(n_splits=5, shuffle=False)
 results, names = list(), list()
 
@@ -25,7 +27,7 @@ for name, model in models.items():
         refit=True
     )
     predictor.fit(x_train, y_train)
-    filename = 'no_rfe_model_%s_%d.sav' % (name, n_per_in)
+    filename = 'rfe_model_%s_%d.sav' % (name, n_per_in)
     print("Writing %s model to file..." % name)
     pickle.dump(predictor, open(filename, 'wb'))
     # evaluate model

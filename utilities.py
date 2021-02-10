@@ -70,6 +70,12 @@ def get_models(names):
         'max_depth': [7, 12, 20],
         'max_features': ['sqrt', 'log2']
     }]
+    # grid_params = [{
+    #     'loss': ['ls'],
+    #     'criterion': ['mae'],
+    #     'max_depth': [20, 40, 60],
+    #     'max_features': ['sqrt']
+    # }]
     all_models['gbr'] = {'estimator': estimator, 'grid_params': grid_params}
     for name, model in all_models.items():
         if name in names:
