@@ -10,7 +10,7 @@ from sklearn.tree import DecisionTreeRegressor
 def get_dataset(n_per_in, n_per_out):
     print('Reading dataset....')
     dataset = pd.read_excel(
-        'all_data_aggregated\\aggregated_dataset_in_' + str(n_per_in) + '_out_' + str(n_per_out) + '.xlsx',
+        'all_data_aggregated\\aggregated_dataset_in_' + str(n_per_in) + '_out_' + str(n_per_out) + '_new.xlsx',
         header=0,
         engine='openpyxl',
         index_col='date'
@@ -20,7 +20,6 @@ def get_dataset(n_per_in, n_per_out):
 
     print('Scaling dataset....')
     scaler = RobustScaler()
-    print("Normalizing data.....")
     x_rescaled = scaler.fit_transform(X)
     return x_rescaled, y
 
@@ -85,3 +84,11 @@ def get_feature_selector(model, n_per_in):
     rfecv = pickle.load(open('rfecv_%s_%d.sav' % (model, n_per_in), 'rb'))
     return rfecv
 
+
+def step_error_as_percentage(y_true, y_predicted):
+    error = pd.Series()
+    if y_true == 0:
+        pass
+    else:
+        error = round(abs((y_true - y_predicted)/y_true * 100), 2)
+    return error
