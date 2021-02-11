@@ -11,7 +11,7 @@ X, y = utilities.get_dataset(n_per_in, n_per_out)
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
 
 
-models = utilities.get_models(['gbr'])
+models = utilities.get_models(['ri', 'dt', 'rf', 'gbr'])
 cv = KFold(n_splits=5, shuffle=False)
 results, names = list(), list()
 
@@ -41,6 +41,7 @@ for name, model in models.items():
     # Printing and plotting the actual values
     pyplot.plot(y_test[:20], label='Actual')
     pyplot.title(f"Predicted vs Actual Daily Step Counts")
+    pyplot.xticks([i for i in range(len(y_predicted[:20]))], [i for i in range(len(y_predicted[:20]))])
     pyplot.ylabel("Steps")
     pyplot.legend()
     pyplot.show()

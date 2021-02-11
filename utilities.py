@@ -1,8 +1,10 @@
+from statistics import mean
+
 import pandas as pd
 import pickle
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import RobustScaler, StandardScaler
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.tree import DecisionTreeRegressor
 
 
@@ -27,12 +29,21 @@ def get_dataset(n_per_in, n_per_out):
 def get_models(names):
     all_models = dict()
     models_to_return = dict()
-    # lr
-    estimator = LinearRegression()
-    grid_params = [{'fit_intercept': [True]}]
-    all_models['lr'] = {'estimator': estimator, 'grid_params': grid_params}
+    # ri
+    estimator = Ridge()
+    # grid_params = [{'fit_intercept': [True]}]
+    grid_params = [{
+        'alpha': [0.1, 1],
+        'solver': ['auto', 'lsqr', 'saga']
+    }]
+    all_models['ri'] = {'estimator': estimator, 'grid_params': grid_params}
     # dt
     estimator = DecisionTreeRegressor()
+    # grid_params = [{
+    #     'criterion': ['mae'],
+    #     'max_depth': [3, 5, 7],
+    #     'max_features': ['auto']
+    # }]
     grid_params = [{
         'criterion': ['mae'],
         'max_depth': [7, 12, 20],
@@ -41,26 +52,24 @@ def get_models(names):
     all_models['dt'] = {'estimator': estimator, 'grid_params': grid_params}
     # rf
     estimator = RandomForestRegressor()
-    # grid_params = [{
-    #     'n_estimators': [50, 100, 150],
-    #     'criterion': ['mae'],
-    #     'max_depth': [7, 12, 20],
-    #     'max_features': ['sqrt', 'log2']
-    # }]
+    grid_params = [{
+        'n_estimators': [50, 100, 150],
+        'criterion': ['mae'],
+        'max_depth': [7, 12, 20],
+        'max_features': ['sqrt', 'log2']
+    }]
     # grid_params = [{
     #     'n_estimators': [150, 200, 250],
     #     'criterion': ['mae'],
     #     'max_depth': [20, 40, 60],
     #     'max_features': ['sqrt']
     # }]
-    grid_params = [{
-        'n_estimators': [250, 300, 400],
-        'criterion': ['mae'],
-        'max_depth': [40],
-        'max_features': ['sqrt']
-    }]
-
-
+    # grid_params = [{
+    #     'n_estimators': [250, 300, 400],
+    #     'criterion': ['mae'],
+    #     'max_depth': [40],
+    #     'max_features': ['sqrt']
+    # }]
     all_models['rf'] = {'estimator': estimator, 'grid_params': grid_params}
     # gbr
     estimator = GradientBoostingRegressor()
@@ -92,9 +101,12 @@ def get_feature_selector(model, n_per_in):
 
 
 def step_error_as_percentage(y_true, y_predicted):
-    error = pd.Series()
-    if y_true == 0:
-        pass
-    else:
-        error = round(abs((y_true - y_predicted)/y_true * 100), 2)
-    return error
+    y_true = y_true.to_list()
+    error_list = list()
+    for i in range(len(y_true)):
+        if y_true[i] == 0:
+            pass
+        else:
+            error = round(abs((y_true[i] - y_predicted[i])/y_true[i] * 100), 2)
+            error_list.append(error)
+    return error_list

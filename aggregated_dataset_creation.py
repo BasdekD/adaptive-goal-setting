@@ -48,7 +48,7 @@ def create_data_with_consecutive_days(df, file_name, counter_of_breaks_in_dates)
     found_non_cons_dates = False
     for index, row in df.iterrows():
         date_1 = datetime.strptime(index, "%Y-%m-%d")
-        date_2 = datetime.strptime(df.loc[df.index[df.index.to_list().index(index) - 1]].name,"%Y-%m-%d")
+        date_2 = datetime.strptime(df.loc[df.index[df.index.to_list().index(index) - 1]].name, "%Y-%m-%d")
         if cons_dates.empty:
             cons_dates = cons_dates.append(row)
         else:
@@ -72,42 +72,42 @@ def create_data_with_consecutive_days(df, file_name, counter_of_breaks_in_dates)
         # pickle.dump(cons_dates, open(file_name+'_%d.sav' % counter_of_breaks_in_dates, 'wb'))
 
 
-n_per_in = 7
+n_per_in = 5
 n_per_out = 1
 n_features = 38
 
-# # The directory where all the individual all_data_aggregated are
-# dataset_folder = os.fsencode('individual_all_data')
-# # Iterating through the individual all_data_aggregated directory
-# counter_of_breaks_in_dates = 0
-# for csv in os.listdir(dataset_folder):
-#     print("Processing file %s" % csv.decode('utf-8'))
-#     # The individual's all_data_aggregated csv
-#     df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'),
-#                        engine='openpyxl', header=0, index_col='date')
-#     print(df.head())
-#     # Setting the date column as the index of the dataframe
-#     df = df.drop_duplicates()
-#     # df = df.set_index(df.columns[0])
-#     create_data_with_consecutive_days(df, csv.decode('utf-8')[:-4], counter_of_breaks_in_dates)
+
+def create_aggregated_dataset(in_periods, out_periods):
+    # The variable in which the aggregated dataset will be stored
+    dataset = pd.DataFrame()
+    consecutive_data_folder = os.fsencode('individual_all_data_cons_days')
+    for csv in os.listdir(consecutive_data_folder):
+        print("Processing file %s" % csv.decode('utf-8'))
+        # The individual's all_data_aggregated csv
+        df = pd.read_excel(os.path.join(consecutive_data_folder, csv).decode('utf-8'),
+                           engine='openpyxl', header=0)
+        # Setting the date column as the index of the dataframe
+        df = df.set_index(df.columns[0])
+        df.index.name = 'date'
+        # Transforming the time series all_data_aggregated in a dataframe appropriate for supervised learning
+        df = transform_timeseries_data(df, n_per_in, n_per_out)
+        # In each iteration the individual dataset is added to the aggregated dataset
+        dataset = pd.concat([dataset, df])
+    path = os.fsencode('all_data_aggregated')
+    print('Writing file aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx')
+    dataset.to_excel(os.path.join(path.decode("utf-8"),
+                                  'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx'))
 
 
-# The variable in which the aggregated dataset will be stored
-dataset = pd.DataFrame()
-consecutive_data_folder = os.fsencode('individual_all_data_cons_days')
-for csv in os.listdir(consecutive_data_folder):
-    print("Processing file %s" % csv.decode('utf-8'))
-    # The individual's all_data_aggregated csv
-    df = pd.read_excel(os.path.join(consecutive_data_folder, csv).decode('utf-8'),
-                       engine='openpyxl', header=0)
-    # Setting the date column as the index of the dataframe
-    df = df.set_index(df.columns[0])
-    df.index.name = 'date'
-    # Transforming the time series all_data_aggregated in a dataframe appropriate for supervised learning
-    df = transform_timeseries_data(df, n_per_in, n_per_out)
-    # In each iteration the individual dataset is added to the aggregated dataset
-    dataset = pd.concat([dataset, df])
-path = os.fsencode('all_data_aggregated')
-print('Writing file aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx')
-dataset.to_excel(os.path.join(path.decode("utf-8"),
-                              'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx'))
+dataset_folder = os.fsencode('individual_all_data')
+# Iterating through the individual all_data_aggregated directory
+for csv in os.listdir(dataset_folder):
+    df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl', header=0, index_col='date')
+    print("Removing non-wear days from file %s" % csv.decode('utf-8'))
+    filtered_data = df.loc[df['Steps'] >= 500]
+    print("Removed %d days from dataset" % (len(df) - len(filtered_data)))
+    dif = df.merge(filtered_data, how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
+    print(dif)
+    print("Checking and handling non-consecutive days in dataset")
+    create_data_with_consecutive_days(filtered_data, csv.decode('utf-8')[:-4], 0)
+create_aggregated_dataset(n_per_in, n_per_out)
