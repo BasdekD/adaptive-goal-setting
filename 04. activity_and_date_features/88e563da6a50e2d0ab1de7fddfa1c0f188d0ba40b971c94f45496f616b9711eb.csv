@@ -1,0 +1,13 @@
+date,Steps,is_holiday,day_of_week,is_weekend,month,day_in_month
+2019-10-31,2569,False,3,False,10,31
+2019-11-01,8089,False,4,False,11,1
+2019-11-02,7344,False,5,True,11,2
+2019-11-03,6648,False,6,True,11,3
+2019-11-04,10174,False,0,False,11,4
+2019-11-05,8967,False,1,False,11,5
+2019-11-06,9457,False,2,False,11,6
+2019-11-07,5028,False,3,False,11,7
+2019-11-08,9400,False,4,False,11,8
+2019-11-09,8603,False,5,True,11,9
+2019-11-10,5782,False,6,True,11,10
+2019-11-11,206,False,0,False,11,11

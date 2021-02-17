@@ -100,13 +100,16 @@ dataset_folder = os.fsencode('03. activity_date_and_covid_features')
 for csv in os.listdir(dataset_folder):
     df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl', header=0, index_col='date')
     print("Removing non-wear days from file %s" % csv.decode('utf-8'))
-    filtered_data = df.loc[df['Steps'] >= 500]
-    print("Removed %d days from dataset" % (len(df) - len(filtered_data)))
-    dif = df.merge(filtered_data, how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
-    print(dif)
-    print("Checking and handling non-consecutive days in dataset")
-    filtered_data = filtered_data.drop_duplicates()
-    create_data_with_consecutive_days(filtered_data, csv.decode('utf-8')[:-4], 0)
+    # filtered_data = df.loc[df['Steps'] >= 500]
+    # print("Removed %d days from dataset" % (len(df) - len(filtered_data)))
+    # dif = df.merge(filtered_data, how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
+    # print(dif)
+    # print("Checking and handling non-consecutive days in dataset")
+    # filtered_data = filtered_data.drop_duplicates()
+    # create_data_with_consecutive_days(filtered_data, csv.decode('utf-8')[:-4], 0)
+    df = df.drop_duplicates()
+    create_data_with_consecutive_days(df, csv.decode('utf-8')[:-4], 0)
+
 create_aggregated_dataset(n_per_in, n_per_out)
 
 
