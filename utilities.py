@@ -52,18 +52,18 @@ def get_models(names):
     all_models['dt'] = {'estimator': estimator, 'grid_params': grid_params}
     # rf
     estimator = RandomForestRegressor()
-    grid_params = [{
-        'n_estimators': [50, 100, 150],
-        'criterion': ['mae'],
-        'max_depth': [7, 12, 20],
-        'max_features': ['sqrt', 'log2']
-    }]
     # grid_params = [{
-    #     'n_estimators': [150, 200, 250],
+    #     'n_estimators': [50, 100, 150],
     #     'criterion': ['mae'],
-    #     'max_depth': [20, 40, 60],
-    #     'max_features': ['sqrt']
+    #     'max_depth': [7, 12, 20],
+    #     'max_features': ['sqrt', 'log2']
     # }]
+    grid_params = [{
+        'n_estimators': [150, 200, 250],
+        'criterion': ['mae'],
+        'max_depth': [12],
+        'max_features': ['sqrt']
+    }]
     # grid_params = [{
     #     'n_estimators': [250, 300, 400],
     #     'criterion': ['mae'],
@@ -109,4 +109,4 @@ def step_error_as_percentage(y_true, y_predicted):
         else:
             error = round(abs((y_true[i] - y_predicted[i])/y_true[i] * 100), 2)
             error_list.append(error)
-    return error_list
+    return mean(error_list)
