@@ -20,31 +20,31 @@ def get_selectors(X, y):
     selectors = dict()
     # # lr
     # print('Training Linear Regression wrapper....')
-    # rfecv = RFECV(estimator=LinearRegression(), step=n_per_in, cv=KFold(shuffle=False),
+    # rfe_models = RFECV(estimator=LinearRegression(), step=n_per_in, cv=KFold(shuffle=False),
     #               scoring='neg_mean_absolute_error',
     #               min_features_to_select=n_per_in, n_jobs=-1)
-    # rfecv.fit(X, y)
+    # rfe_models.fit(X, y)
     # filename = 'rfecv_lr_'+str(n_per_in)+'.sav'
-    # pickle.dump(rfecv, open(filename, 'wb'))
-    # selectors['lr'] = rfecv
+    # pickle.dump(rfe_models, open(filename, 'wb'))
+    # selectors['lr'] = rfe_models
     # # dt
     # print('Training Decision Tree wrapper....')
-    # rfecv = RFECV(estimator=DecisionTreeRegressor(), step=n_per_in, cv=KFold(shuffle=False),
+    # rfe_models = RFECV(estimator=DecisionTreeRegressor(), step=n_per_in, cv=KFold(shuffle=False),
     #               scoring='neg_mean_absolute_error',
     #               min_features_to_select=n_per_in, n_jobs=-1)
-    # rfecv.fit(X, y)
+    # rfe_models.fit(X, y)
     # filename = 'rfecv_dt_'+str(n_per_in)+'.sav'
-    # pickle.dump(rfecv, open(filename, 'wb'))
-    # selectors['dt'] = rfecv
+    # pickle.dump(rfe_models, open(filename, 'wb'))
+    # selectors['dt'] = rfe_models
     # # rf
     # print('Training Random Forest wrapper....')
-    # rfecv = RFECV(estimator=RandomForestRegressor(), step=n_per_in, cv=KFold(shuffle=False),
+    # rfe_models = RFECV(estimator=RandomForestRegressor(), step=n_per_in, cv=KFold(shuffle=False),
     #               scoring='neg_mean_absolute_error',
     #               min_features_to_select=n_per_in, n_jobs=-1)
-    # rfecv.fit(X, y)
+    # rfe_models.fit(X, y)
     # filename = 'rfecv_rf_'+str(n_per_in)+'.sav'
-    # pickle.dump(rfecv, open(filename, 'wb'))
-    # selectors['rf'] = rfecv
+    # pickle.dump(rfe_models, open(filename, 'wb'))
+    # selectors['rf'] = rfe_models
     # gbr
     print('Training GBRegressor wrapper....')
     rfecv = RFECV(estimator=GradientBoostingRegressor(), step=n_per_in, cv=KFold(shuffle=False),

@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeRegressor
 def get_dataset(n_per_in, n_per_out):
     print('Reading dataset....')
     dataset = pd.read_excel(
-        'all_data_aggregated\\aggregated_dataset_in_' + str(n_per_in) + '_out_' + str(n_per_out) + '_new.xlsx',
+        '01. aggregated_and_timeseries_transformed_datasets\\aggregated_dataset_in_5_out_1_activity_date.xlsx',
         header=0,
         engine='openpyxl',
         index_col='date'
@@ -52,18 +52,18 @@ def get_models(names):
     all_models['dt'] = {'estimator': estimator, 'grid_params': grid_params}
     # rf
     estimator = RandomForestRegressor()
-    # grid_params = [{
-    #     'n_estimators': [50, 100, 150],
-    #     'criterion': ['mae'],
-    #     'max_depth': [7, 12, 20],
-    #     'max_features': ['sqrt', 'log2']
-    # }]
     grid_params = [{
-        'n_estimators': [150, 200, 250],
+        'n_estimators': [50, 100, 150],
         'criterion': ['mae'],
-        'max_depth': [12],
-        'max_features': ['sqrt']
+        'max_depth': [7, 12, 20],
+        'max_features': ['sqrt', 'log2']
     }]
+    # grid_params = [{
+    #     'n_estimators': [150, 200, 250],
+    #     'criterion': ['mae'],
+    #     'max_depth': [12],
+    #     'max_features': ['sqrt']
+    # }]
     # grid_params = [{
     #     'n_estimators': [250, 300, 400],
     #     'criterion': ['mae'],

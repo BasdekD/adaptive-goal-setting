@@ -9,8 +9,8 @@ def preprocessing():
     # dataset_dir = os.fsencode(dataset_path)
     # csv = os.listdir(dataset_dir)[0]
     gr_holidays = holidays.GR()
-    individual_data = os.fsencode('individual_raw_activity_data')
-    # Iterating through the individual all_data_aggregated directory
+    individual_data = os.fsencode('05. activity_data')
+    # Iterating through the individual 01. aggregated_and_timeseries_transformed_datasets directory
     for csv in os.listdir(individual_data):
         df = pd.read_csv(os.path.join(individual_data, csv).decode('utf-8'))
         is_holiday_df = pd.DataFrame(columns=['is_holiday'])
@@ -34,7 +34,7 @@ def preprocessing():
 
         df = pd.concat([df, is_holiday_df, day_of_week, is_weekend, month, day_in_month], axis=1)
         df = df.set_index(df.columns[0])
-        path = os.fsencode('individual_preprocessed_activity_data')
+        path = os.fsencode('04. activity_and_date_features')
         print("Writing file {}.......".format(csv.decode("utf-8")))
         df.to_csv(os.path.join(path.decode("utf-8"), csv.decode("utf-8")))
 

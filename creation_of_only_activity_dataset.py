@@ -35,6 +35,9 @@ def transform_timeseries_data(data, n_in=1, n_out=1, drop_NaN=True):
     # drop rows with NaN values
     if drop_NaN:
         agg.dropna(inplace=True)
+
+    # y = agg['var1(t)']
+    # X = agg.drop(columns='var1(t)')
     return agg
 
 
@@ -80,25 +83,25 @@ def create_aggregated_dataset(in_periods, out_periods):
     consecutive_data_folder = os.fsencode('07. temp_datasets_with_only_consecutive_dates')
     for csv in os.listdir(consecutive_data_folder):
         print("Processing file %s" % csv.decode('utf-8'))
-        # The individual's 01. aggregated_and_timeseries_transformed_datasets csv
         df = pd.read_excel(os.path.join(consecutive_data_folder, csv).decode('utf-8'),
                            engine='openpyxl', header=0)
         # Setting the date column as the index of the dataframe
         df = df.set_index(df.columns[0])
         df.index.name = 'date'
-        df = transform_timeseries_data(df, n_per_in, n_per_out)
+        df = transform_timeseries_data(df, in_periods, out_periods)
         # In each iteration the individual dataset is added to the aggregated dataset
         dataset = pd.concat([dataset, df])
     path = os.fsencode('01. aggregated_and_timeseries_transformed_datasets')
-    print('Writing file aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx')
+    print('Writing file aggregated_dataset_in_'+str(in_periods)+'_out_'+str(out_periods)+'_new.xlsx')
     dataset.to_excel(os.path.join(path.decode("utf-8"),
-                                  'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx'))
+                                  'aggregated_dataset_in_'+str(in_periods)+'_out_'+str(out_periods)+'_new.xlsx'))
 
 
-dataset_folder = os.fsencode('03. activity_date_and_covid_features')
-# Iterating through the individual 01. aggregated_and_timeseries_transformed_datasets directory
+dataset_folder = os.fsencode('04. activity_and_date_features')
 for csv in os.listdir(dataset_folder):
-    df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl', header=0, index_col='date')
+    df = pd.read_csv(os.path.join(dataset_folder, csv).decode('utf-8'))
+    df = df.set_index(df.columns[0])
+    df.index.name = 'date'
     print("Removing non-wear days from file %s" % csv.decode('utf-8'))
     filtered_data = df.loc[df['Steps'] >= 500]
     print("Removed %d days from dataset" % (len(df) - len(filtered_data)))
@@ -107,6 +110,7 @@ for csv in os.listdir(dataset_folder):
     print("Checking and handling non-consecutive days in dataset")
     filtered_data = filtered_data.drop_duplicates()
     create_data_with_consecutive_days(filtered_data, csv.decode('utf-8')[:-4], 0)
+
 create_aggregated_dataset(n_per_in, n_per_out)
 
 

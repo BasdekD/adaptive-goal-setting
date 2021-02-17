@@ -2,14 +2,14 @@ import pandas as pd
 import os
 
 questionary_features = pd.read_excel(
-    'questionary_data/questionary_features.xlsx',
+    '02. questionary_data/questionary_features.xlsx',
     header=0,
     engine='openpyxl',
     index_col='hash'
 )
 questionary_features = questionary_features.iloc[:23, :31]
 
-activity_features = os.fsencode('individual_preprocessed_activity_data')
+activity_features = os.fsencode('04. activity_and_date_features')
 participant_id = 0
 for csv in os.listdir(activity_features):
     df = pd.DataFrame()
@@ -30,6 +30,6 @@ for csv in os.listdir(activity_features):
             print(len(dataset) == len(activity_data))
             dataset = dataset.set_index(dataset.columns[0])
             # dataset = dataset.rename(columns={'index': 'hash_id'})
-            path = os.fsencode('individual_all_data')
+            path = os.fsencode('02. activity_date_covid_questionnaire_feautures')
             print("Writing file {}.......".format(csv.decode("utf-8")))
             dataset.to_excel(os.path.join(path.decode("utf-8"), activity_sample_hash+'.xlsx'))
