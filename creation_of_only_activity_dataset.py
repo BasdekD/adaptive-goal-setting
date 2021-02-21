@@ -43,7 +43,7 @@ def transform_timeseries_data(data, n_in=1, n_out=1, drop_NaN=True):
 
 def create_data_with_consecutive_days(df, file_name, counter_of_breaks_in_dates):
     print("Checking dates")
-    directory = '07. temp_datasets_with_only_consecutive_dates'
+    directory = '08. temp_datasets_with_only_consecutive_dates'
     cons_dates = pd.DataFrame(columns=df.columns)
     found_non_cons_dates = False
     for index, row in df.iterrows():
@@ -80,7 +80,7 @@ n_features = 38
 def create_aggregated_dataset(in_periods, out_periods):
     # The variable in which the aggregated dataset will be stored
     dataset = pd.DataFrame()
-    consecutive_data_folder = os.fsencode('07. temp_datasets_with_only_consecutive_dates')
+    consecutive_data_folder = os.fsencode('08. temp_datasets_with_only_consecutive_dates')
     for csv in os.listdir(consecutive_data_folder):
         print("Processing file %s" % csv.decode('utf-8'))
         df = pd.read_excel(os.path.join(consecutive_data_folder, csv).decode('utf-8'),
@@ -97,7 +97,7 @@ def create_aggregated_dataset(in_periods, out_periods):
                                   'aggregated_dataset_in_'+str(in_periods)+'_out_'+str(out_periods)+'_new.xlsx'))
 
 
-dataset_folder = os.fsencode('04. activity_and_date_features')
+dataset_folder = os.fsencode('05. activity_and_date_features')
 for csv in os.listdir(dataset_folder):
     df = pd.read_csv(os.path.join(dataset_folder, csv).decode('utf-8'))
     df = df.set_index(df.columns[0])

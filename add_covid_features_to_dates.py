@@ -2,11 +2,11 @@ import pandas as pd
 import os
 from datetime import datetime as dt
 
-covid_features = pd.read_csv("06. additional_data\\01. covid_data\\covid_features.csv")
+covid_features = pd.read_csv("07. additional_data\\01. covid_data\\covid_features.csv")
 covid_features = covid_features.set_index(covid_features.columns[0])
 covid_features.index = covid_features.index.astype('datetime64[ns]')
 
-activity_data_directory = os.fsencode('04. activity_and_date_features')
+activity_data_directory = os.fsencode('05. activity_and_date_features')
 path = os.fsencode('03. activity_date_and_covid_features')
 
 for csv in os.listdir(activity_data_directory):

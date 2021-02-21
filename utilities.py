@@ -13,7 +13,7 @@ def get_dataset(n_per_in, n_per_out):
     print('Reading dataset....')
     dataset = pd.read_excel(
         '01. aggregated_and_timeseries_transformed_datasets\\'
-        'aggregated_dataset_in_5_out_1_activity_date_covid.xlsx',
+        'aggregated_dataset_in_5_out_1_activity_date_ques_no_values_bellow_500.xlsx',
         header=0,
         engine='openpyxl',
         index_col='date'
