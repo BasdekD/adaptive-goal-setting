@@ -39,7 +39,7 @@ for threshold in percentage_threshold:
     outliers = train_data.iloc[:no_of_outliers, ::]
 
     pyplot.figure()
-    pyplot.title("Daily Step Counts in Dataset\nOutliers Found: %d for threshold: %.2f%%" % (no_of_outliers, threshold*100))
+    pyplot.title("Daily Step Counts in Dataset\nOutliers Found: %d for threshold: %d%%" % (no_of_outliers, (threshold*100)))
     pyplot.scatter([i for i in random.sample(range(0, len(clipped_data)), len(outliers))], outliers['var1(t)'], c="red")
     pyplot.scatter([i for i in random.sample(range(0, len(clipped_data)), len(clipped_data))], clipped_data['var1(t)'], c="blue")
     pyplot.xlabel("Index of Sample in Dataset")
@@ -50,7 +50,7 @@ for threshold in percentage_threshold:
     gbr = GradientBoostingRegressor(**params)
     custom_scorer = make_scorer(utilities.step_error_as_percentage, greater_is_better=False)
     scoring = {'mae': 'neg_mean_absolute_error', 'perc_scorer': custom_scorer}
-    print("Obtaining Cross Validation Scores for Threshold %.2f%%" % threshold)
+    print("Obtaining Cross Validation Scores for Threshold %d%%" % (threshold * 100))
     cv = KFold(shuffle=False)
     clipped_data = clipped_data.sample(frac=1)
     clipped_y = clipped_data['var1(t)']
@@ -62,17 +62,17 @@ for threshold in percentage_threshold:
         scoring=scoring,
         cv=cv
     )
-    print("Fitting Model to training data, threshold %.2f" % threshold)
+    print("Fitting Model to training data, threshold %d%%" % (threshold * 100))
     gbr.fit(clipped_X, clipped_y)
     y_pred = gbr.predict(x_test)
     val_score = mean_absolute_error(y_test, y_pred)
     val_mape = utilities.step_error_as_percentage(y_test, y_pred)
-    print("Outliers: %d, Threshold: %.2f%%, MEAN CV MAE: %d, STDEV: %d, MEAN CV MAPE: %.2f%%" %
-          (no_of_outliers, threshold, mean(scores['test_mae']), stdev(scores), mean(scores['test_perc_scorer'])))
+    print("Outliers: %d, Threshold: %d%%, MEAN CV MAE: %d, MEAN CV MAPE: %2f%%" %
+          (no_of_outliers, (threshold * 100), mean(scores['test_mae']), mean(scores['test_perc_scorer'])))
     print("MAE in validation set: %d" % val_score)
     print("MAPE in test set: %.2f%%" % val_mape)
     cv_mae_results.append(mean(scores['test_mae']) * -1)
-    cv_mape_results.append(mean(scores['test_perc_scorer']))
+    cv_mape_results.append(mean(scores['test_perc_scorer'] * -1))
     mae_test_set_results.append(val_score)
     mape_test_set_results.append(val_mape)
 
