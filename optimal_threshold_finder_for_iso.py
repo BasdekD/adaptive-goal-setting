@@ -23,9 +23,9 @@ for contamination_value in contamination:
     print("Outliers Detected: %d" % len(outliers))
 
     pyplot.figure()
-    pyplot.title("Daily Step Counts in Dataset\nOutliers Found: %d for Contamination: %.2f%%"
+    pyplot.title("Daily Step Counts in Dataset\nOutliers Found: %d for Contamination: %d%%"
                  % (len(outliers), contamination_value * 100))
-    pyplot.scatter([i for i in range(len(outliers))], outliers, c="red")
+    pyplot.scatter([i for i in random.sample(range(0, len(y_train_iso)), len(outliers))], outliers, c="red")
     pyplot.scatter([i for i in range(len(y_train_iso))], y_train_iso, c="blue")
     pyplot.xlabel("Step Count Index in Dataset")
     pyplot.ylabel("Daily Step Count")
@@ -36,7 +36,7 @@ for contamination_value in contamination:
     gbr = GradientBoostingRegressor(**params)
     cv = KFold(n_splits=5, shuffle=False)
     scoring = {'mae': 'neg_mean_absolute_error', 'perc_scorer': custom_scorer}
-    print("Evaluating model for contamination: %.2f%%" % contamination_value * 100)
+    print("Evaluating model for contamination: %d%%" % (contamination_value * 100))
     scores = cross_validate(
         gbr,
         x_train_iso,
@@ -45,13 +45,13 @@ for contamination_value in contamination:
         cv=cv,
         return_estimator=True
     )
-    print("Fitting Model to training data, contamination: %.2f%%" % contamination_value * 100)
+    print("Fitting Model to training data, contamination: %d%%" % (contamination_value * 100))
     gbr.fit(x_train_iso, y_train_iso)
     y_pred = gbr.predict(x_test)
     test_set_mae = mean_absolute_error(y_test, y_pred)
     test_set_mape = utilities.step_error_as_percentage(y_test, y_pred)
-    print("Outliers: %d, Contamination: %.2f%%, Mean CV MAE: %d, STDEV: %d\n"
-          "Mean Percentage Error: %2f%%" % (len(outliers), contamination_value * 100, mean(scores['test_mae']),
+    print("Outliers: %d, Contamination: %d%%, Mean CV MAE: %d, STDEV: %d\n"
+          "Mean Percentage Error: %2f%%" % (len(outliers), (contamination_value * 100), mean(scores['test_mae']),
                                             stdev(scores['test_mae']), mean(scores['test_perc_scorer'])))
     print("MAE in validation set: %d" % test_set_mae)
     mae_cv_results.append(mean(scores['test_mae']) * -1)
