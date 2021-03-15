@@ -10,7 +10,7 @@ import pickle
 
 import utilities
 
-n_per_in = 14
+n_per_in = 5
 n_per_out = 1
 initial_n_features = 38
 
@@ -47,7 +47,8 @@ def get_selectors(X, y):
     # selectors['rf'] = rfe_models
     # gbr
     print('Training GBRegressor wrapper....')
-    rfecv = RFECV(estimator=GradientBoostingRegressor(), step=n_per_in, cv=KFold(shuffle=False),
+    params = {'criterion': 'mae', 'loss': 'ls', 'max_depth': 7, 'max_features': 'log2'}
+    rfecv = RFECV(estimator=GradientBoostingRegressor(**params), step=n_per_in, cv=KFold(shuffle=False),
                   scoring='neg_mean_absolute_error',
                   min_features_to_select=n_per_in, n_jobs=-1)
     rfecv.fit(X, y)
@@ -58,7 +59,7 @@ def get_selectors(X, y):
 
 
 # define dataset
-X, y = utilities.get_dataset(n_per_in, n_per_out)
+X, y = utilities.get_dataset_without_outliers(n_per_in, n_per_out)
 # get the models to evaluate
 selectors = get_selectors(X, y)
 # evaluate the models and store results

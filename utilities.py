@@ -27,6 +27,31 @@ def get_dataset(n_per_in, n_per_out):
     return x_rescaled, y
 
 
+def get_dataset_without_outliers (n_per_in, n_per_out):
+    print('Reading dataset....')
+    data = pd.read_excel(
+        '01. aggregated_and_timeseries_transformed_datasets\\aggregated_dataset_in_' + str(n_per_in) + '_out_'
+        + str(n_per_out) + '_activity_date_covid_ques_no_values_bellow_500.xlsx',
+        header=0,
+        engine='openpyxl',
+        index_col='date'
+    )
+
+    y = data['var1(t)']
+    X = data.drop(columns='var1(t)')
+    print('Scaling dataset....')
+    scaler = RobustScaler()
+    x_rescaled = scaler.fit_transform(X.values)
+    x_rescaled_df = pd.DataFrame(x_rescaled, index=X.index, columns=X.columns)
+    data = pd.concat([x_rescaled_df, y], axis=1)
+    data = data.sort_values(by='var1(t)', ascending=False)
+    no_of_outliers = round(len(data) * 0.02)
+    clipped_data = data.iloc[no_of_outliers:, ::]
+    clipped_data = clipped_data.sample(frac=1)
+    clipped_y = clipped_data['var1(t)']
+    clipped_X = clipped_data.drop(columns='var1(t)')
+    return clipped_X, clipped_y
+
 def get_models(names):
     all_models = dict()
     models_to_return = dict()
