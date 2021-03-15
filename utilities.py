@@ -13,7 +13,7 @@ def get_dataset(n_per_in, n_per_out):
     print('Reading dataset....')
     dataset = pd.read_excel(
         '01. aggregated_and_timeseries_transformed_datasets\\'
-        'aggregated_dataset_in_5_out_1_activity_date_ids_no_values_bellow_500.xlsx',
+        'aggregated_dataset_in_5_out_1_activity_date_covid_ques_no_values_bellow_500.xlsx',
         header=0,
         engine='openpyxl',
         index_col='date'
@@ -75,10 +75,13 @@ def get_models(names):
     # gbr
     estimator = GradientBoostingRegressor()
     grid_params = [{
-        'loss': ['ls', 'huber'],
-        'criterion': ['mae'],
-        'max_depth': [7, 12, 20],
-        'max_features': ['sqrt', 'log2']
+        'loss': ['ls'],
+        'criterion': ['mae', 'friedman_mse'],
+        'max_depth': [7, 12],
+        'max_features': ['sqrt', 'auto'],
+        'n_estimators': [100, 150],
+        'learning_rate': [0.05, 0.1],
+        'subsample': [0.5, 1.0]
     }]
     # grid_params = [{
     #     'loss': ['ls'],
