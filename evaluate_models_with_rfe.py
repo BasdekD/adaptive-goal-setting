@@ -1,55 +1,53 @@
+from statistics import mean
+from sklearn.ensemble import GradientBoostingRegressor
 import utilities
 import pickle
-from sklearn.model_selection import KFold, GridSearchCV, train_test_split
-from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import KFold, train_test_split, cross_validate
+from sklearn.metrics import mean_absolute_error, make_scorer
+from sklearn.pipeline import Pipeline
 from matplotlib import pyplot
 
 
 n_per_in = 5
 n_per_out = 1
-X, y = utilities.get_dataset(n_per_in, n_per_out)
-rfe = pickle.load(open('rfecv_models\\rfecv_gbr_%d.sav'%n_per_in, 'rb'))
-x_reduced = rfe.transform(X)
-x_train, x_test, y_train, y_test = train_test_split(x_reduced, y, test_size=0.10, random_state=42)
+X, y = utilities.get_dataset_without_outliers(n_per_in, n_per_out)
+rfe = pickle.load(open('models\\03. models_after_rfe\\01. core_models\\rfecv_gbr_%d.sav' % n_per_in, 'rb'))
+# x_reduced = rfe.transform(X)
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
+params = {'criterion': 'mae', 'loss': 'ls', 'max_depth': 7, 'max_features': 'log2'}
+gbr = GradientBoostingRegressor(**params)
+pipeline = Pipeline(steps=[('select', rfe), ('predictor', gbr)])
+custom_scorer = make_scorer(utilities.step_error_as_percentage, greater_is_better=False)
+scoring = {'mae': 'neg_mean_absolute_error', 'perc_scorer': custom_scorer}
+print("Obtaining Cross Validation Scores")
+cv = KFold(shuffle=False)
+scores = cross_validate(
+    pipeline,
+    x_train,
+    y_train,
+    scoring=scoring,
+    cv=cv
+)
+print("Fitting Model to training data")
+pipeline.fit(x_train, y_train)
+filename = 'rfe_no_outlier_model_gbr_%d.sav' % n_per_in
+print("Writing GBR model to file...")
+pickle.dump(pipeline, open(filename, 'wb'))
+y_pred = pipeline.predict(x_test)
+test_set_mae = mean_absolute_error(y_test, y_pred)
+test_set_mape = utilities.step_error_as_percentage(y_test, y_pred)
+print("MEAN CV MAE: %d, MEAN CV MAPE: %2f%%" % (mean(scores['test_mae']), mean(scores['test_perc_scorer'])))
+print("MAE in test set: %d" % test_set_mae)
+print("MAPE in test set: %.2f%%" % test_set_mape)
+cv_mae = mean(scores['test_mae']) * -1
+cv_mape = mean(scores['test_perc_scorer']) * -1
 
-models = utilities.get_models(['lr', 'dt', 'rf', 'gbr'])
-
-cv = KFold(n_splits=5, shuffle=False)
-results, names = list(), list()
-
-for name, model in models.items():
-    print("Looking for best parameters for %s model..." % name)
-    predictor = GridSearchCV(
-        estimator=model['estimator'],
-        param_grid=model['grid_params'],
-        scoring='neg_mean_absolute_error',
-        cv=cv,
-        refit=True
-    )
-    predictor.fit(x_train, y_train)
-    filename = 'rfe_model_%s_%d.sav' % (name, n_per_in)
-    print("Writing %s model to file..." % name)
-    pickle.dump(predictor, open(filename, 'wb'))
-    # evaluate model
-    print("Getting predictions for validation set")
-    y_predicted = predictor.predict(x_test)
-    print('MAE in validation set for %s: %.3f' % (name, mean_absolute_error(y_test, y_predicted)))
-    score = predictor.best_score_
-    results.append(score)
-    names.append(name)
-    # report performance
-    print('>%s %.3f' % (name, score))
-    pyplot.plot(y_predicted[:20], label='Predicted')
-    # Printing and plotting the actual values
-    pyplot.plot(y_test[:20], label='Actual')
-    pyplot.title(f"Predicted vs Actual Daily Step Counts")
-    pyplot.ylabel("Steps")
-    pyplot.legend()
-    pyplot.show()
-
-pyplot.figure()
-pyplot.title('CV MAE PER MODEL')
-pyplot.xlabel("Algorithms")
-pyplot.ylabel("MAE")
-pyplot.bar(names, results)
+# report performance
+pyplot.plot(y_pred[:20], label='Predicted')
+# Printing and plotting the actual values
+pyplot.plot(y_test[:20], label='Actual')
+pyplot.title(f"Predicted vs Actual Daily Step Counts\nAlgo: GBR")
+pyplot.xticks([i for i in range(len(y_pred[:20]))], [i for i in range(len(y_pred[:20]))])
+pyplot.ylabel("Steps")
+pyplot.legend()
 pyplot.show()

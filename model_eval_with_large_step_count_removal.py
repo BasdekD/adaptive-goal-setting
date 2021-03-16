@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import pickle
 from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import train_test_split, KFold, cross_validate
 from sklearn.ensemble import GradientBoostingRegressor
@@ -31,7 +32,8 @@ x_train, x_test, y_train, y_test = train_test_split(x_rescaled_df, y, test_size=
 
 train_data = pd.concat([x_train, y_train], axis=1)
 train_data = train_data.sort_values(by='var1(t)', ascending=False)
-percentage_threshold = [0.01, 0.02, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3, 0.5]
+# percentage_threshold = [0.01, 0.02, 0.03, 0.05, 0.07, 0.1, 0.2, 0.3, 0.5]
+percentage_threshold = [0.02]
 cv_mae_results, cv_mape_results, mae_test_set_results, mape_test_set_results = list(), list(), list(), list()
 for threshold in percentage_threshold:
     no_of_outliers = round(len(train_data) * threshold)
@@ -64,6 +66,9 @@ for threshold in percentage_threshold:
     )
     print("Fitting Model to training data, threshold %d%%" % (threshold * 100))
     gbr.fit(clipped_X, clipped_y)
+    filename = 'no_rfe_no_outlier_model_gbr_%d.sav' % n_per_in
+    print("Writing GBR model to file...")
+    pickle.dump(gbr, open(filename, 'wb'))
     y_pred = gbr.predict(x_test)
     val_score = mean_absolute_error(y_test, y_pred)
     val_mape = utilities.step_error_as_percentage(y_test, y_pred)

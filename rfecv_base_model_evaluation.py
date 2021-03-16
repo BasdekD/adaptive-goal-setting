@@ -12,7 +12,7 @@ import utilities
 
 n_per_in = 5
 n_per_out = 1
-initial_n_features = 38
+initial_n_features = 53
 
 
 # get a list of models to evaluate
