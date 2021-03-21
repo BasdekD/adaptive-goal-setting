@@ -30,8 +30,8 @@ def get_dataset(n_per_in, n_per_out):
 def get_dataset_without_outliers (n_per_in, n_per_out):
     print('Reading dataset....')
     data = pd.read_excel(
-        '01. aggregated_and_timeseries_transformed_datasets\\aggregated_dataset_in_' + str(n_per_in) + '_out_'
-        + str(n_per_out) + '_activity_date_covid_ques_no_values_bellow_500.xlsx',
+        '01. aggregated_and_timeseries_transformed_datasets\\full_dataset_in_' + str(n_per_in) + '_out_'
+        + str(n_per_out) + '.xlsx',
         header=0,
         engine='openpyxl',
         index_col='date'
@@ -101,12 +101,10 @@ def get_models(names):
     estimator = GradientBoostingRegressor()
     grid_params = [{
         'loss': ['ls'],
-        'criterion': ['mae', 'friedman_mse'],
-        'max_depth': [7, 12],
-        'max_features': ['sqrt', 'auto'],
-        'n_estimators': [100, 150],
-        'learning_rate': [0.05, 0.1],
-        'subsample': [0.5, 1.0]
+        'criterion': ['mae'],
+        'max_depth': [7, 12, 20],
+        'max_features': ['sqrt'],
+        'n_estimators': [100, 150, 200]
     }]
     # grid_params = [{
     #     'loss': ['ls'],

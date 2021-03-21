@@ -69,7 +69,7 @@ def create_data_with_consecutive_days(df, file_name, counter_of_breaks_in_dates)
         # pickle.dump(cons_dates, open(file_name+'_%d.sav' % counter_of_breaks_in_dates, 'wb'))
 
 
-n_per_in = 5
+n_per_in = 20
 n_per_out = 1
 n_features = 38
 
@@ -92,10 +92,10 @@ def create_aggregated_dataset(in_periods, out_periods):
     path = os.fsencode('01. aggregated_and_timeseries_transformed_datasets')
     print('Writing file aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx')
     dataset.to_excel(os.path.join(path.decode("utf-8"),
-                                  'aggregated_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'_new.xlsx'))
+                                  'full_dataset_in_'+str(n_per_in)+'_out_'+str(n_per_out)+'.xlsx'))
 
 
-dataset_folder = os.fsencode('09. activity_date_ids')
+dataset_folder = os.fsencode('02. activity_date_covid_questionnaire_features')
 # Iterating through the individual 01. aggregated_and_timeseries_transformed_datasets directory
 for csv in os.listdir(dataset_folder):
     df = pd.read_excel(os.path.join(dataset_folder, csv).decode('utf-8'), engine='openpyxl', header=0, index_col='date')
