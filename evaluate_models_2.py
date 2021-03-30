@@ -4,8 +4,7 @@ from sklearn.model_selection import KFold, GridSearchCV, train_test_split
 from sklearn.metrics import mean_absolute_error, make_scorer
 from matplotlib import pyplot
 
-
-n_per_in = 7
+n_per_in = 20
 n_per_out = 1
 X, y = utilities.get_dataset_without_outliers(n_per_in, n_per_out)
 x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)

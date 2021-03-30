@@ -30,7 +30,7 @@ scores = cross_validate(
 )
 print("Fitting Model to training data")
 pipeline.fit(x_train, y_train)
-filename = 'rfe_no_outlier_model_gbr_%d.sav' % n_per_in
+filename = 'rfe_no_outlier_model_pipe_%d.sav' % n_per_in
 print("Writing GBR model to file...")
 pickle.dump(pipeline, open(filename, 'wb'))
 y_pred = pipeline.predict(x_test)
